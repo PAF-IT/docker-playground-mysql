@@ -1,11 +1,13 @@
 services:
   db:
     image: mysql
+    pull_policy: always
+    container_name: paf-docker-mysql
     environment:
-      - MYSQL_DB_NAME=${{ secrets.MYSQL_DB_NAME }}
-      - MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
-      - MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
-      - MYSQL_USER=${{ secrets.MYSQL_USER }}
+      MYSQL_DB_NAME: paf-admin
+      MYSQL_PASSWORD: /run/secrets/mysql_password
+      MYSQL_ROOT_PASSWORD: /run/secrets/mysql_root_password
+      MYSQL_USER: paf-admin
     restart: always
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
@@ -18,6 +20,12 @@ services:
       - db-data:/var/lib/mysql
     networks:
       - backend
+
+secrets:
+  mysql_password:
+    environment: "MYSQL_PASSWORD"
+  mysql_root_password:
+    environment: "MYSQL_ROOT_PASSWORD"
 
 volumes:
   db-data:
