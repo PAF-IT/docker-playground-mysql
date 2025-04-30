@@ -23,8 +23,12 @@ jobs:
 
       - name: Build and push container image to GitHub Container Registry
         env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
           MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
-          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
         run: |
-          docker compose build
-          docker compose push
+          docker build . --tag docker-playground-mysql
+           tags="${{ github.ref_name }} ${{ github.sha }}"
+            for tag in $tags; do
+            docker tag docker-playground-mysql ghcr.io/paf-it/docker-playground-mysql:$tag
+            docker push ghcr.io/paf-it/docker-playground-mysql:$tag
+          done
