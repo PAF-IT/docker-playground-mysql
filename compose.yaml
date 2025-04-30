@@ -2,11 +2,10 @@ services:
   db:
     image: mysql
     environment:
-      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_PORT=3306
-      - MYSQL_USER=${MYSQL_USER}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
-      - MYSQL_DB_NAME=${MYSQL_DB_NAME}
+      - MYSQL_DB_NAME=${{ secrets.MYSQL_DB_NAME }}
+      - MYSQL_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+      - MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_PASSWORD }}
+      - MYSQL_USER=${{ secrets.MYSQL_USER }}
     restart: always
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
