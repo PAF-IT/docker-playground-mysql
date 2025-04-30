@@ -1,0 +1,30 @@
+services:
+  db:
+    image: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_PORT=3306
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DB_NAME=${MYSQL_DB_NAME}
+    restart: always
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "--silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./init/data-playground.sql:/docker-entrypoint-initdb.d/data.sql
+      - ./init/privileges.sql:/docker-entrypoint-initdb.d/privileges.sql
+      - db-data:/var/lib/mysql
+    networks:
+      - backend
+
+volumes:
+  db-data:
+
+networks:
+  backend:
+    driver: bridge
+    name: backend
+    attachable: true
