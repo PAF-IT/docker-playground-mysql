@@ -32,3 +32,13 @@ jobs:
             docker tag docker-playground-mysql ghcr.io/paf-it/docker-playground-mysql:$tag
             docker push ghcr.io/paf-it/docker-playground-mysql:$tag
           done
+
+      - name: Insert cr value and secrets into kubernetes manifest
+        uses: swdotcom/update-and-apply-kubernetes-configs@v1
+        with:
+          k8-config-file-paths: k8/mysql-deployment.yaml
+          replacement-method: defined
+        env:
+          IMAGE: ghcr.io/paf-it/docker-playground-mysql:$tag
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
