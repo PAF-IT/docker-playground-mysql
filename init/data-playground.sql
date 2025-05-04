@@ -8,7 +8,7 @@ CREATE TABLE `data` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 INSERT INTO `data` (`id`, `date`, `message`) VALUES
-(0, '2025-04-30 12:00:00', 'first message in DB!');
+(0, '2025-04-30 12:00:00', 'First entry in DB!');
 
 CREATE TABLE `migration` (
   `id` int(11) NOT NULL,

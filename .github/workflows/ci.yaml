@@ -22,23 +22,26 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push container image to GitHub Container Registry
-        env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
-          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
         run: |
-          docker build . --tag docker-playground-mysql
+          docker build . --tag paf-admin-mysql
            tags="${{ github.ref_name }} ${{ github.sha }}"
             for tag in $tags; do
-            docker tag docker-playground-mysql ghcr.io/paf-it/docker-playground-mysql:$tag
-            docker push ghcr.io/paf-it/docker-playground-mysql:$tag
+            docker tag paf-admin-mysql ghcr.io/paf-it/paf-admin-mysql:$tag
+            docker push ghcr.io/paf-it/paf-admin-mysql:$tag
           done
 
-      - name: Insert cr value and secrets into kubernetes manifest
+      # Insert here: UpCloud Kubernetes credentials
+
+      - name: Set Kubernetes deployment image
         uses: swdotcom/update-and-apply-kubernetes-configs@v1
         with:
-          k8-config-file-paths: k8/mysql-deployment.yaml
+          k8-config-file-paths: |
+            k8/mysql-configmap.yaml
+            k8/mysql-deployment.yaml
           replacement-method: defined
         env:
-          IMAGE: ghcr.io/paf-it/docker-playground-mysql:$tag
-          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          IMAGE: ghcr.io/paf-it/paf-admin-mysql:$tag
+          MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
           MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+          MYSQL_USER: ${{ secrets.MYSQL_USER }}

@@ -46,16 +46,30 @@ spec:
     spec:
       containers:
       - image: ${IMAGE}
+#      - image: paf-admin-mysql
+#        imagePullPolicy: Never
         name: mysql
         env:
-        - name: MYSQL_ROOT_PASSWORD
-          value: ${MYSQL_ROOT_PASSWORD}
-        - name: MYSQL_DATABASE
-          value: paf-admin
-        - name: MYSQL_USER
-          value: paf-admin
-        - name: MYSQL_PASSWORD
-          value: ${MYSQL_PASSWORD}
+          - name: MYSQL_DATABASE
+            valueFrom:
+              configMapKeyRef:
+                name: paf-admin-mysql
+                key: mysql_database
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: paf-admin-mysql
+                key: mysql_password
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              configMapKeyRef:
+                name: paf-admin-mysql
+                key: mysql_root_password
+          - name: MYSQL_USER
+            valueFrom:
+              configMapKeyRef:
+                name: paf-admin-mysql
+                key: mysql_user
         ports:
         - containerPort: 3306
           name: mysql
