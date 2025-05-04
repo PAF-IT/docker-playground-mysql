@@ -1,4 +1,4 @@
-# docker-playground-backend
+# docker-playground-mysql
 
 This repository demonstrates the creation of a MySQL Docker container by a GitHub Action (started manually). This includes:
 
