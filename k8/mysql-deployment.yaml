@@ -46,11 +46,9 @@ spec:
       containers:
       - name: mysql
         image: ${IMAGE}
-#      - image: paf-admin-mysql
-#        imagePullPolicy: Never
         resources:
           requests:
-            memory: 2Gi
+            memory: 1Gi
         env:
           - name: MYSQL_DATABASE
             valueFrom:
