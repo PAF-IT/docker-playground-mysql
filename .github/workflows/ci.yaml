@@ -23,16 +23,30 @@ jobs:
 
       - name: Build and push container image to GitHub Container Registry
         run: |
+          IMAGE = ghcr.io/paf-it/paf-admin-mysql:${{ github.sha }}
           docker build . --tag paf-admin-mysql
-           tags="${{ github.ref_name }} ${{ github.sha }}"
-            for tag in $tags; do
-            docker tag paf-admin-mysql ghcr.io/paf-it/paf-admin-mysql:$tag
-            docker push ghcr.io/paf-it/paf-admin-mysql:$tag
-          done
+          docker tag paf-admin-mysql $IMAGE
+          docker push $IMAGE
 
-      # Insert here: UpCloud Kubernetes credentials
+      - name: Set kubectl config
+        run: |
+          # Generate kubeconfig using the kubeconfig from secrets instead
+          echo "${{ secrets.UPCLOUD_KUBECONFIG }}" > kubeconfig.yaml
 
-      - name: Set Kubernetes deployment image
+          # Verify kubeconfig was created
+          if [ ! -f kubeconfig.yaml ]; then
+            echo "Failed to generate kubeconfig"
+            exit 1
+          fi
+
+          # Set KUBECONFIG environment variable
+          export KUBECONFIG=$(pwd)/kubeconfig.yaml
+
+          # Get the current context name
+          CURRENT_CONTEXT=$(kubectl config current-context)
+          echo "Current context: $CURRENT_CONTEXT"
+
+      - name: Deploy to Kubernetes
         uses: swdotcom/update-and-apply-kubernetes-configs@v1
         with:
           k8-config-file-paths: |
@@ -40,7 +54,7 @@ jobs:
             k8/mysql-deployment.yaml
           replacement-method: defined
         env:
-          IMAGE: ghcr.io/paf-it/paf-admin-mysql:$tag
+          IMAGE: $IMAGE
           MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
           MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
           MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}

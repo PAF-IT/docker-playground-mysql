@@ -4,7 +4,7 @@ FROM mysql:latest
 # Set the default user for the MySQL image
 USER mysql
 
-# initialize database, set privileges
+# Initialize database, set privileges
 ADD init/data-playground.sql /docker-entrypoint-initdb.d/data.sql
 ADD init/privileges.sql /docker-entrypoint-initdb.d/privileges.sql
 

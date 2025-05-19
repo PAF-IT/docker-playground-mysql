@@ -23,21 +23,20 @@ spec:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 1Gi
+      storage: 2Gi
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: ReplicaSet
 metadata:
   name: paf-admin-mysql
   labels:
     app: paf-admin
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: paf-admin
       tier: mysql
-  strategy:
-    type: Recreate
   template:
     metadata:
       labels:
@@ -45,10 +44,13 @@ spec:
         tier: mysql
     spec:
       containers:
-      - image: ${IMAGE}
+      - name: mysql
+        image: ${IMAGE}
 #      - image: paf-admin-mysql
 #        imagePullPolicy: Never
-        name: mysql
+        resources:
+          requests:
+            memory: 2Gi
         env:
           - name: MYSQL_DATABASE
             valueFrom:
@@ -70,6 +72,9 @@ spec:
               configMapKeyRef:
                 name: paf-admin-mysql
                 key: mysql_user
+        livenessProbe:
+          tcpSocket:
+            port: 3306
         ports:
         - containerPort: 3306
           name: mysql
