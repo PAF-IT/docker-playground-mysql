@@ -20,13 +20,13 @@ metadata:
     app: paf-admin
 spec:
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: 2Gi
 ---
 apiVersion: apps/v1
-kind: ReplicaSet
+kind: Deployment
 metadata:
   name: paf-admin-mysql
   labels:
@@ -70,6 +70,11 @@ spec:
               configMapKeyRef:
                 name: paf-admin-mysql
                 key: mysql_user
+        command:
+          - chown
+          - -R
+          - 999:999
+          - /var/lib/mysql
         livenessProbe:
           tcpSocket:
             port: 3306
