@@ -2,4 +2,3 @@
 .idea/
 .env
 init/data-paf.sql
-k8/kustomization.yaml
