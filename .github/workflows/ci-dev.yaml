@@ -1,4 +1,4 @@
-name: Docker Build, Upload and Kubernetes Deploy
+name: DEV - Docker Build, Upload and Kubernetes Deploy
 
 on: workflow_dispatch
 
@@ -35,6 +35,7 @@ jobs:
         with:
           method: kubeconfig
           kubeconfig: ${{ secrets.UPCLOUD_KUBECONFIG }}
+          context: 'dev'
 
       - name: Deploy to Kubernetes
         uses: swdotcom/update-and-apply-kubernetes-configs@v1
@@ -45,6 +46,7 @@ jobs:
             k8s/mysql-service.yaml
             k8s/mysql-deployment.yaml
           replacement-method: defined
+          namespace: 'dev'
         env:
           IMAGE: ${{ steps.build.outputs.image }}
           MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}
