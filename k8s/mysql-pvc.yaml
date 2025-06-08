@@ -3,7 +3,7 @@ kind: PersistentVolumeClaim
 metadata:
   name: mysql-pv-claim
   labels:
-    app: paf-admin
+    app: paf-admin-mysql
 spec:
   storageClassName: upcloud-block-storage-maxiops
   accessModes:

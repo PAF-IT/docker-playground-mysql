@@ -2,6 +2,11 @@ name: PROD - Docker Build, Upload and Kubernetes Deploy
 
 on: workflow_dispatch
 
+env:
+  # Set global action env variables for PROD:
+  IMAGE_TAG: paf-admin-mysql-prod
+  KUBE_NAMESPACE: prod
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -24,10 +29,10 @@ jobs:
       - name: Build and push container image to GitHub Container Registry
         id: build
         run: |
-          IMAGE="ghcr.io/paf-it/paf-admin-mysql:${{ github.sha }}"
+          IMAGE="ghcr.io/paf-it/${{ env.IMAGE_TAG }}:${{ github.sha }}"
           echo "image=$IMAGE" >> "$GITHUB_OUTPUT"
-          docker build . --tag paf-admin-mysql
-          docker tag paf-admin-mysql $IMAGE
+          docker build . --tag ${{ env.IMAGE_TAG }}
+          docker tag ${{ env.IMAGE_TAG }} $IMAGE
           docker push $IMAGE
 
       - name: Set kubectl Context
@@ -35,7 +40,7 @@ jobs:
         with:
           method: kubeconfig
           kubeconfig: ${{ secrets.UPCLOUD_KUBECONFIG }}
-          context: 'prod'
+          context: ${{ env.KUBE_NAMESPACE }}
 
       - name: Deploy to Kubernetes
         uses: swdotcom/update-and-apply-kubernetes-configs@v1
@@ -46,7 +51,7 @@ jobs:
             k8s/mysql-service.yaml
             k8s/mysql-deployment.yaml
           replacement-method: defined
-          namespace: 'prod'
+          namespace: ${{ env.KUBE_NAMESPACE }}
         env:
           IMAGE: ${{ steps.build.outputs.image }}
           MYSQL_DATABASE: ${{ secrets.MYSQL_DATABASE }}

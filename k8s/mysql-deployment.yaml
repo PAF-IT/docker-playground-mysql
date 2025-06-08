@@ -3,18 +3,16 @@ kind: Deployment
 metadata:
   name: paf-admin-mysql
   labels:
-    app: paf-admin
+    app: paf-admin-mysql
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: paf-admin
-      tier: mysql
+      app: paf-admin-mysql
   template:
     metadata:
       labels:
-        app: paf-admin
-        tier: mysql
+        app: paf-admin-mysql
     spec:
       restartPolicy: Always
       containers:

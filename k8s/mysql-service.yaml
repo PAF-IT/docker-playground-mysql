@@ -3,11 +3,10 @@ kind: Service
 metadata:
   name: paf-admin-mysql
   labels:
-    app: paf-admin
+    app: paf-admin-mysql
 spec:
   ports:
     - port: 3306
   selector:
-    app: paf-admin
-    tier: mysql
+    app: paf-admin-mysql
   clusterIP: None
